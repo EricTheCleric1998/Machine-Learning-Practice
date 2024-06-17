@@ -1,0 +1,20 @@
+#Pycharm config folder
+.idea/
+.pytest_cashe
+
+# virtual enviromnemt
+venv/
+ENV/
+env/
+
+# python stuff
+build/
+develop-eggs/
+.Python
+eggs
+.eggs/
+lib/
+lib64/
+*.egg-info/
+.installed.cfg
+*.egg
