@@ -2,4 +2,4 @@ This project has a .gitignore which should filterout from being pushed pycharm c
 
 Put all code (.py files) in the src directory.
 
-Put all data files in the data directory.
+Put all data files (.csv, .png, .jpg, etc) in the data directory. If you have large groups of files, use subdirectories to orginize
