@@ -18,3 +18,5 @@ lib64/
 *.egg-info/
 .installed.cfg
 *.egg
+
+roger/
