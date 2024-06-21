@@ -163,7 +163,7 @@ pyPercent = (correct/numVals)*100
 
 print()
 print(f"Accuracy for 2d four classes with {neighbors} neighbors: ")
-print(f"-Numpy nearest neighbors: {correct} / {numVals} correct for {pyPercent}%")
+print(f"-Numpy nearest neighbors: {correct} / {numVals} correct for {pyPercent:.2f}%")
 print()
 
 #Tests for 3d accuracy.
@@ -178,7 +178,7 @@ for i in vals:
 pyPercent = (correct/numVals)*100
 
 print(f"Accuracy for 3d four classes with {neighbors} neighbors: ")
-print(f"-Numpy nearest neighbors: {correct} / {numVals} correct for {pyPercent}%")
+print(f"-Numpy nearest neighbors: {correct} / {numVals} correct for {pyPercent:.2f}%")
 
 plt.show()
 
