@@ -37,6 +37,7 @@ plot_results = True
 # np.random.seed(42)
 # points = {"blue": np.random.uniform(0, 20, (100000, 2)), "red": np.random.uniform(0, 20, (100000, 2))}
 # new_point = np.random.uniform(0, 20, (1, 2)).flatten()
+# plot_results = True  # If you are confident your system can handle it
 
 # 3d testing
 # points = {"blue": [[2.0, 4, 3], [1, 3, 5], [2, 3, 1], [3, 2, 3], [2, 1, 6]],
