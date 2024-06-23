@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 # NOTE: depending on how you set up your project environment, this MAY NOT be the correct path to fish_data.csv for you.
 #       If when you run, fish_data.csv is not found, then try removing teh ..\ from the beginning of the path.
 # The current directory is the src directory of the project. Go up one level (..). Then look in the data directory.
-path = r'..\data\fish_data.csv'
+path = r'../data/fish_data.csv'
 
 # To help with understanding, print the absolute path
 print(os.path.abspath(path))
