@@ -51,3 +51,4 @@ Other hyperparameters are:
 After you get working k-Nearest Neighbor and NN classifiers, fine tune the NN and compare results using
 Monte Carlo Cross-Validation with 10 repeated random samplings.
 
+If you have not yet implemented a general and fast k-Nearest Neighbor, then for this second week, use the library function from SciKit-Learn: https://scikit-learn.org/stable/modules/generated/sklearn.neighbors.KNeighborsClassifier.html
