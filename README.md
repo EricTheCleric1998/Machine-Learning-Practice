@@ -43,10 +43,12 @@ working at least as good as the k-Nearest Neighbor classifier.
 The two primary hyperparameters to adjust are the number of
 hidden layers, the number of nodes in each hidden layer.
 
-Other hyperparameters are:
+Other hyperparameters:
 1) Activation Function: For a binary classifier, the most commonly used activation function **for the output layer** is the sigmoid function. For all other layers, ReLU or Leaky ReLU are usually best.
 2) Optimizer: I suggest Adam
 3) Weight and Biases initialization: I suggest starting with TensorFlow default (the biases are set to zero, while the weights are set according to the Glorot uniform initializer)
+4) Loss Function: for this binary classifier, I suggest using loss='binary_crossentropy'.
+5) Number of epochs: Start with 2 or 3 for quick debuging. When the bugs seem to be worked out, increase to 100, then increase to 150. If the results are better, keep increasing until you stop seeing improvements. A more advanced approach is to create a validation split, set the max epochs to 10s of thousands or more and use Early Stopping set ot 20 to 50 epochs. There will not be time for that more advanced approach and it is better to get some practice specifically increasing the epochs and getting a "feel" for the effect on a model before using early stopping.
 
 After you get working k-Nearest Neighbor and NN classifiers, fine tune the NN and compare results using
 Monte Carlo Cross-Validation with 10 repeated random samplings.
