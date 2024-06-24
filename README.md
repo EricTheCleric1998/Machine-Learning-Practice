@@ -44,13 +44,13 @@ The two primary hyperparameters to adjust are the number of
 hidden layers, the number of nodes in each hidden layer.
 
 Other hyperparameters:
-1) Activation Function: For a binary classifier, the most commonly used activation function **for the output layer** is the sigmoid function. For all other layers, ReLU or Leaky ReLU are usually best.
-2) Optimizer: I suggest Adam
-3) Weight and Biases initialization: I suggest starting with TensorFlow default (the biases are set to zero, while the weights are set according to the Glorot uniform initializer)
-4) Loss Function: for this binary classifier, I suggest using loss='binary_crossentropy'.
+1) Activation Function: For a binary classifier, the most commonly used activation function **for the output layer** is the sigmoid function. For all other layers, ReLU or Leaky ReLU are usually best. For more info on activation functions in general see https://machinelearningmastery.com/using-activation-functions-in-neural-networks/
+2) Optimizer: I suggest Adam (an Adaptive Stochastic Gradient Descent with Momentum). For more info on Adam see: https://machinelearningmastery.com/adam-optimization-algorithm-for-deep-learning/
+3) Weight and Biases initialization: I suggest starting with TensorFlow default (the biases are set to zero, while the weights are set according to the Glorot uniform initializer). For more info on weights and biases, see https://machinelearningmastery.com/visualizing-the-vanishing-gradient-problem/
+4) Loss Function: for this binary classifier, I suggest using loss='binary_crossentropy'. For more info on Loss Functions, see https://machinelearningmastery.com/5-useful-loss-functions/
 5) Number of epochs: Start with 2 or 3 for quick debuging. When the bugs seem to be worked out, increase to 100, then increase to 150. If the results are better, keep increasing until you stop seeing improvements. A more advanced approach is to create a validation split, set the max epochs to 10s of thousands or more and use Early Stopping set ot 20 to 50 epochs. There will not be time for that more advanced approach and it is better to get some practice specifically increasing the epochs and getting a "feel" for the effect on a model before using early stopping.
 
 After you get working k-Nearest Neighbor and NN classifiers, fine tune the NN and compare results using
-Monte Carlo Cross-Validation with 10 repeated random samplings.
+Monte Carlo Cross-Validation with 10 repeated random samplings. For more info, see https://towardsdatascience.com/cross-validation-k-fold-vs-monte-carlo-e54df2fc179b
 
 If you have not yet implemented a general and fast k-Nearest Neighbor, then for this second week, use the library function from SciKit-Learn: https://scikit-learn.org/stable/modules/generated/sklearn.neighbors.KNeighborsClassifier.html
