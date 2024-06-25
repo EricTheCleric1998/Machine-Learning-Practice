@@ -9,11 +9,16 @@ Put all data files (.csv, .png, .jpg, etc) in the data directory. If you have la
 
 The file data/PhiUSIIL_Phishing_URL_Dataset.csv is 
 a substantial dataset comprising 134,850 legitimate 
-and 100,945 phishing URLs. There are 51 features and
+and 100,945 phishing URLs. There are 49 features and
 the label which is a binary classification: 1=legitimate,
-0=phishing. Write and compare both a K-Nearest Neighbor
+0=phishing. The URLs are in a separate file: PhiUSIIL_Phishing_URL_Dataset_URL_Only.csv
+Write and compare both a K-Nearest Neighbor
 and a fully connected feed-forward neural network
 (using TensorFlow) to classify and test your classifier.
+
+You can call functions from your <name>.py file from last week by including it in the include list.
+name your new file(s) <your_first_name>_url.py. You might want to split your code into different files. 
+That is fine, just begin each file name with <your_first_name>_ so there are no name clashes.
 
 Use the train_test_split function (https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.train_test_split.html) 
 to split the data into a 90% training segment and a 10% 
