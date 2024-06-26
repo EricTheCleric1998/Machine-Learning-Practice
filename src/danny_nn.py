@@ -4,7 +4,7 @@ import tensorflow as tf
 from sklearn.model_selection import train_test_split
 
 phisArray = np.genfromtxt(r'..\data\PhiUSIIL_Phishing_URL_Dataset.csv', delimiter=',', skip_header=1,
-                          dtype= np.float64, encoding='utf-8', usecols=(0, 2, -1))
+                          dtype=np.float64, encoding='utf-8', usecols=(0, 2, -1))
 
 #normalizing values
 
@@ -12,8 +12,14 @@ phisArray = np.genfromtxt(r'..\data\PhiUSIIL_Phishing_URL_Dataset.csv', delimite
 xTrain, xTest, yTrain, yTest = train_test_split(phisArray[:, :-1], phisArray[:, -1:],
                                                 random_state=10, test_size=0.1)
 
+print(f'xTrain shape: {np.shape(xTrain)}')
+print(f'xTest shape: {np.shape(xTest)}')
+print(f'yTrain shape: {np.shape(yTrain)}')
+print(f'yTest shape: {np.shape(yTest)}')
 
 neighbors = 5
+print(f"Starting K-Nearest Neighbors with k={neighbors}")
+
 numVals = np.size(xTest, axis=0)
 vals = range(numVals)
 correct = 0
@@ -55,6 +61,7 @@ model = tf.keras.Sequential([tf.keras.Input(testShape),
                              tf.keras.layers.Dense(units=1, activation='sigmoid')])
 model.compile(optimizer = 'adam', loss = 'binary_crossentropy', metrics = ['accuracy'])
 model.summary()
+
 model.fit(xTrain, yTrain, epochs = 100)
 
 
