@@ -15,11 +15,12 @@ neighbors = 3
 # Correct usage message and exit in case of error
 def usage_error():
     print("Valid test usage: roger.py <\"small\", \"middle\", \"large\", and \"3D\">")
-    print("Valid file path usage: roger.py <file path> <columns> <categories>")
+    print("Valid file path usage: roger.py <file path> <number of categories> <c1> <c2> ... <cn>")
+    print("where c1, c2...cn are the columns to considered for proximity")
     sys.exit(1)
 
 
-# TODO: Modify data to match csv files with category as last column, read data from .csv files
+# TODO: URL csv testing
 # Command-line argument parsing
 parser = argparse.ArgumentParser(description='K-Nearest Neighbors Algorithm')
 parser.add_argument('command', nargs='+', help='Test type or path to the data file')
@@ -65,7 +66,7 @@ if len(args.command) == 1:
     # Large scale testing parameters for runtime difference, disables visualization by default
     elif data == "large":
         np.random.seed(42)
-        points = {"blue": np.random.uniform(0, 20, (100000, 2)), "red": np.random.uniform(0, 20, (100000, 2))}
+        points = {"blue": np.random.uniform(0, 20, (1000000, 2)), "red": np.random.uniform(0, 20, (1000000, 2))}
         new_point = np.random.uniform(0, 20, (1, 2)).flatten()
         neighbors = 73
         # plot_results = True  # If you are confident your system can handle it
@@ -78,14 +79,39 @@ if len(args.command) == 1:
         three_dim = True
         new_point = [3.0, 3, 4]
 
-elif len(args.command) ==3:
+# Was unable to get a working or even promising implementation of my code to run with direct .csv format
+# To ensure I have time, I was able to spend a few hours modifying the data from the csv to match my program
+# Example/tester command line argument: ../data/fish_data.csv 2 0 1
+elif len(args.command) >= 3:
     data_path = args.command[0]
-    columns = args.command[1]
-    categories = args.command[2]
+    categories = int(args.command[1])
+    columns = np.array(args.command[2:], dtype=int)
 
     if not data_path.endswith(".csv") or not os.path.isfile(data_path):
         print(f"Error: The provided file, '{data_path}' is not a .csv file, does not exist, or could not be found")
         usage_error()
+
+    print(os.path.abspath(data_path))
+    data = np.genfromtxt(data_path, delimiter=',', dtype=np.float32, skip_header=1)
+    plot_results = len(columns) < 4
+    three_dim = len(columns) == 3
+    relevant_data = data[:, columns]
+    data_categories = data[:, -1]
+    category_labels = ["blue", "red", "cyan", "magenta", "orange", "maroon", "aqua"]
+    points = {color: [] for color in category_labels[:categories]}
+
+    for i in range(len(relevant_data)):
+        category_index = int(data_categories[i])
+        if category_index < len(category_labels):
+            color = category_labels[category_index]
+            points[color].append(relevant_data[i])
+
+    # Convert lists to numpy arrays
+    for color in points:
+        points[color] = np.array(points[color])
+
+    new_point = [63, 5]
+
 
 else:
     print("Invalid Arguments Error: Arguments must be either an included test or the path to a .csv file "
@@ -241,14 +267,15 @@ class KNearestNeighbors:
         indices = np.argsort(distances[:, 0])[:self.k]
         categories = distances[indices, 1]
         result = Counter(categories).most_common(1)[0][0]
+        confidence = Counter(categories).most_common(1)[0][1] / neighbors
 
         # Prediction testing
-        print("Method: predict")
-        print(f"Normalized new point: {unkwn_pt}")
-        print(f"Distances: {distances}")
-        print(f"Selected categories: {categories}")
+        # print("Method: predict")
+        # print(f"Normalized new point: {unkwn_pt}")
+        # print(f"Distances: {distances}")
+        # print(f"Selected categories: {categories}")
 
-        return result
+        return result, confidence
 
     def bad_predict(self, pt):
         unkwn_pt = self._normalize_new_point(pt)
@@ -261,14 +288,15 @@ class KNearestNeighbors:
 
         categories = [category[1] for category in sorted(distances)[:self.k]]
         result = Counter(categories).most_common(1)[0][0]
+        confidence = Counter(categories).most_common(1)[0][1] / neighbors
 
         # Prediction testing
-        print("Method: bad_predict")
-        print(f"Normalized new point: {unkwn_pt}")
-        print(f"Distances (bad_predict): {distances}")
-        print(f"Selected categories (bad_predict): {categories}")
+        # print("Method: bad_predict")
+        # print(f"Normalized new point: {unkwn_pt}")
+        # print(f"Distances (bad_predict): {distances}")
+        # print(f"Selected categories (bad_predict): {categories}")
 
-        return result
+        return result, confidence
 
 
 clf = KNearestNeighbors()
@@ -291,8 +319,9 @@ if plot_results:
 # Timed for loops (bad)
 start_time = time.time()
 clf.bad_fit(points)
-prediction = clf.bad_predict(new_point)
-print(f"{prediction} predicted with loops in: {time.time() - start_time:.6f} seconds")
+prediction, confidence = clf.bad_predict(new_point)
+print(f"{prediction} predicted with loops in {time.time() - start_time:.6f} seconds with "
+      f"{confidence * 100:.3f}% confidence")
 
 if plot_results:
     init_graph(axs[1])
@@ -313,8 +342,9 @@ clf._denormalize_points()
 # Timed numpy optimization
 start_time = time.time()
 clf.fit(points)
-prediction = clf.predict(new_point)
-print(f"{prediction} predicted with numpy in: {time.time() - start_time:.6f} seconds")
+prediction, confidence = clf.predict(new_point)
+print(f"{prediction} predicted with numpy in {time.time() - start_time:.6f} seconds with "
+      f"{confidence * 100:.3f}% confidence")
 
 if plot_results:
     init_graph(axs[2])
