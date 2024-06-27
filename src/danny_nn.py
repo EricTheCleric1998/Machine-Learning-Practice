@@ -2,6 +2,7 @@ from danny import npClosest
 import numpy as np
 import tensorflow as tf
 from sklearn.model_selection import train_test_split
+import time
 
 phisArray = np.genfromtxt(r'..\data\PhiUSIIL_Phishing_URL_Dataset.csv', delimiter=',', skip_header=1,
                           dtype=np.float64, encoding='utf-8', usecols=(0, 2, -1))
@@ -17,18 +18,23 @@ print(f'xTest shape: {np.shape(xTest)}')
 print(f'yTrain shape: {np.shape(yTrain)}')
 print(f'yTest shape: {np.shape(yTest)}')
 
-# neighbors = 5
-# print(f"Starting K-Nearest Neighbors with k={neighbors}")
-#
-# numVals = np.size(xTest, axis=0)
-# vals = range(numVals)
-# correct = 0
-# for i in vals:
-#     x1 = xTest[i]
-#     y1 = yTest[i]
-#     if npClosest(neighbors, phisArray, x1) == y1:
-#         correct = correct + 1
-# pyPercent = (correct / numVals) * 100
+neighbors = 5
+print(f"Starting K-Nearest Neighbors with k={neighbors}")
+
+
+start = time.time_ns()
+numVals = np.size(xTest, axis=0)
+vals = range(numVals)
+correct = 0
+for i in vals:
+    x1 = xTest[i]
+    y1 = yTest[i]
+    if npClosest(neighbors, phisArray, x1) == y1:
+        correct = correct + 1
+pyPercent = (correct / numVals) * 100
+end = time.time_ns()
+print(f"NP function time (ns): {end - start}")
+
 
 #Normalizing values
 # mins = xTrain.min(axis=0)
