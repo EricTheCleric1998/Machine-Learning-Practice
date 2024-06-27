@@ -93,8 +93,8 @@ elif len(args.command) >= 3:
 
     print(os.path.abspath(data_path))
     data = np.genfromtxt(data_path, delimiter=',', dtype=np.float32, skip_header=1)
-    plot_results = len(columns) < 4
-    three_dim = len(columns) == 3
+    plot_results = len(columns) < 4 and len(data) <= 100
+    three_dim = len(columns) == 3  and len(data) <= 100
     relevant_data = data[:, columns]
     data_categories = data[:, -1]
     category_labels = ["blue", "red", "cyan", "magenta", "orange", "maroon", "aqua"]
@@ -117,8 +117,6 @@ else:
     print("Invalid Arguments Error: Arguments must be either an included test or the path to a .csv file "
           "with the number of columns and categories.")
     usage_error()
-
-
 
 
 def np_euclid_dist(p, q):
@@ -176,10 +174,6 @@ def plot_prediction(ax):
                 ax.scatter(point[0], point[1], color=color, s=30)
                 ax.plot([norm_new_point[0], point[0]], [norm_new_point[1], point[1]], color=color, linestyle="--",
                         linewidth=1, alpha=0.6)
-
-
-
-
 
 # Modified to be further optimized, if
 class KNearestNeighbors:
@@ -356,3 +350,4 @@ if plot_results:
 # print("After numpy run")
 # for category in clf.my_points:
     # print(category, clf.my_points[category])
+
