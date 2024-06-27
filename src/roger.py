@@ -175,32 +175,26 @@ def plot_prediction(ax):
                 ax.plot([norm_new_point[0], point[0]], [norm_new_point[1], point[1]], color=color, linestyle="--",
                         linewidth=1, alpha=0.6)
 
+
 # Modified to be further optimized, if
 class KNearestNeighbors:
-    def __init__(self):  # Adjust k for testing, 17 for middle, 73 for large
-        self.k = neighbors
+    def __init__(self, k_value):  # Adjust k for testing, 17 for middle, 73 for large
+        self.k = k_value
         self.my_points = None
         self.means = None
         self.stds = None
 
     def _normalize_points(self):
-        # vstack was a red herring, concatenate is better, though still has one loop
-        all_points = np.concatenate([self.my_points[category] for category in self.my_points])
+        # vstack was not a red herring, though still has one loop
+        all_points = np.vstack([self.my_points[category] for category in self.my_points])
 
         # Mean and standard deviation calculation is the same
         self.means = np.mean(all_points, axis=0)
         self.stds = np.std(all_points, axis=0)
 
         # Normalize all points at once
-        normalized_points = (all_points - self.means) / self.stds
-
-        # Need categories for my data, but could be avoided by making category just another dimension of the vector,
-        # as is done with the fish variables. If I could start over, would be the first thing I did this week.
-        start_idx = 0
         for category in self.my_points:
-            num_points = len(self.my_points[category])
-            self.my_points[category] = normalized_points[start_idx:start_idx + num_points].tolist()
-            start_idx += num_points
+            self.my_points[category] = (self.my_points[category] - self.means) / self.stds
 
     def _bad_normalize_points(self):
         # Calculate mean and standard deviation for each axis using for loops
@@ -248,36 +242,42 @@ class KNearestNeighbors:
         self._bad_normalize_points()
 
     def predict(self, pt):
-        unkwn_pt = self._normalize_new_point(pt)
+        unknown_pt = self._normalize_new_point(pt)
         distances = []
+        kinds = []
 
-        # Vectorize distance calculation
-        for category, points in self.my_points.items():
-            dists = np.linalg.norm(points - unkwn_pt, axis=1)
-            distances.extend(zip(dists, [category] * len(dists)))
+        for category, pts in self.my_points.items():
+            dists = np.linalg.norm(pts - unknown_pt, axis=1)
+            distances.append(dists)
+            kinds.append([category] * len(dists))
 
-        # Adjust result for vectorized distance calculation
-        distances = np.array(distances)
-        indices = np.argsort(distances[:, 0])[:self.k]
-        categories = distances[indices, 1]
-        result = Counter(categories).most_common(1)[0][0]
-        confidence = Counter(categories).most_common(1)[0][1] / neighbors
+        # Flatten the lists with concatenate
+        distances = np.concatenate(distances)
+        kinds = np.concatenate(kinds)
+
+        # Use argpartition (thanks Danny) to get the indices of the k smallest distances
+        partitioned_indices = np.argpartition(distances, self.k)[:self.k]
+        nearest_kinds = kinds[partitioned_indices]
+
+        result = Counter(nearest_kinds).most_common(1)[0][0]
+        trust = Counter(nearest_kinds).most_common(1)[0][1] / self.k
 
         # Prediction testing
         # print("Method: predict")
-        # print(f"Normalized new point: {unkwn_pt}")
+        print(f"Neighbors: {self.k}")
+        # print(f"Normalized new point: {unknown_pt}")
         # print(f"Distances: {distances}")
-        # print(f"Selected categories: {categories}")
+        # print(f"Selected kinds: {nearest_kinds}")
 
-        return result, confidence
+        return result, trust
 
     def bad_predict(self, pt):
-        unkwn_pt = self._normalize_new_point(pt)
+        unknown_pt = self._normalize_new_point(pt)
         distances = []
 
         for category in self.my_points:
             for point in self.my_points[category]:
-                distance = np_euclid_dist(point, unkwn_pt)
+                distance = np_euclid_dist(point, unknown_pt)
                 distances.append([distance, category])
 
         categories = [category[1] for category in sorted(distances)[:self.k]]
@@ -286,14 +286,15 @@ class KNearestNeighbors:
 
         # Prediction testing
         # print("Method: bad_predict")
-        # print(f"Normalized new point: {unkwn_pt}")
+        #print(f"Neighbors: {neighbors}")
+        # print(f"Normalized new point: {unknown_pt}")
         # print(f"Distances (bad_predict): {distances}")
         # print(f"Selected categories (bad_predict): {categories}")
 
         return result, confidence
 
 
-clf = KNearestNeighbors()
+clf = KNearestNeighbors(neighbors)
 
 # Normalization accuracy testing
 # print("Before running")
