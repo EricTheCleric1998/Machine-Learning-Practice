@@ -20,103 +20,104 @@ def usage_error():
     sys.exit(1)
 
 
-# TODO: URL csv testing
-# Command-line argument parsing
-parser = argparse.ArgumentParser(description='K-Nearest Neighbors Algorithm')
-parser.add_argument('command', nargs='+', help='Test type or path to the data file')
-args = parser.parse_args()
+if __name__ == "__main__":
+    # Command-line argument parsing
+    parser = argparse.ArgumentParser(description='K-Nearest Neighbors Algorithm')
+    parser.add_argument('command', nargs='+', help='Test type or path to the data file')
+    args = parser.parse_args()
 
-if len(args.command) == 1:
-    data = args.command[0].lower()
-    if data not in ["small", "middle", "large", "3d"]:
-        print(data)
-        print("Usage Error: For one argument, requires the type of test.")
+    if len(args.command) == 1:
+        data = args.command[0].lower()
+        if data not in ["small", "middle", "large", "3d"]:
+            print(data)
+            print("Usage Error: For one argument, requires the type of test.")
+            usage_error()
+
+        # Simple testing, 2 blues and a 1 red should be the closest 3 with near identical distances
+        if data == "small":
+            points = {"blue": np.array([[6.0, 7], [5, 6], [2, 4], [3, 5], [7, 7]]),
+                      "red": np.array([[5.0, 3], [5, 4], [3, 3], [6, 4], [4, 2]])}
+            plot_results = True
+            new_point = [3.0, 4]
+
+        # Middle scale testing for more densely populated graphs
+        elif data == "middle":
+            np.random.seed(42)
+            points = {"blue": np.array([[2.9, 2.0], [4.5, 3.1], [7.8, 6.0], [9.0, 8.0], [3.0, 2.5], [6.0, 4.5],
+                                        [10.0, 8.0], [5.4, 4.0], [12.0, 10.0], [3.9, 3.0], [6.3, 5.0], [7.5, 5.5],
+                                        [8.4, 7.0], [4.5, 3.5], [11.7, 10.0], [9.6, 8.0], [10.8, 9.0], [12.6, 10.5],
+                                        [3.6, 3.0], [8.1, 6.0], [5.7, 4.0], [6.6, 5.5], [7.2, 6.0], [3.0, 2.5],
+                                        [4.8, 4.0], [9.3, 7.5], [5.1, 4.0], [6.9, 5.5], [7.8, 6.0], [3.3, 2.5],
+                                        [5.4, 4.5], [8.4, 7.0], [4.2, 3.5], [10.2, 8.5],  [6.0, 5.0], [7.5, 6.0],
+                                        [3.9, 3.0], [8.7, 7.0], [5.7, 4.5], [9.9, 8.0], [11.4, 9.5], [6.6, 5.5],
+                                        [4.8, 4.0], [3.6, 3.0], [7.8, 6.0], [6.3, 5.0], [10.8, 9.0], [5.1, 4.0],
+                                        [4.5, 3.5]]),
+                      "red": np.array([[2.0, 3.0], [3.1, 4.5], [6.0, 7.8], [8.0, 9.0], [2.5, 3.0], [4.5, 6.0],
+                                       [8.0, 10.0], [4.0, 5.4], [10.0, 12.0], [3.0, 3.9], [5.0, 6.3], [5.5, 7.5],
+                                       [7.0, 8.4], [3.5, 4.5], [10.0, 11.7], [8.0, 9.6], [9.0, 10.8], [10.5, 12.6],
+                                       [3.0, 3.6], [6.0, 8.1], [4.0, 5.7], [5.5, 6.6], [6.0, 7.2], [2.5, 3.0],
+                                       [4.0, 4.8], [7.5, 9.3], [4.0, 5.1], [5.5, 6.9], [6.0, 7.8], [2.5, 3.3],
+                                       [4.5, 5.4], [7.0, 8.4], [3.5, 4.2], [8.5, 10.2], [5.0, 6.0], [6.0, 7.5],
+                                       [3.0, 3.9], [7.0, 8.7], [4.5, 5.7], [8.0, 9.9], [9.5, 11.4], [5.5, 6.6],
+                                       [4.0, 4.8], [3.0, 3.6], [6.0, 7.8], [5.0, 6.3], [9.0, 10.8], [4.0, 5.1],
+                                       [3.5, 4.5]])}
+            new_point = [5.7, 6.8]
+            plot_results = True
+            neighbors = 17
+
+        # Large scale testing parameters for runtime difference, disables visualization by default
+        elif data == "large":
+            np.random.seed(42)
+            points = {"blue": np.random.uniform(0, 20, (1000000, 2)), "red": np.random.uniform(0, 20, (1000000, 2))}
+            new_point = np.random.uniform(0, 20, (1, 2)).flatten()
+            neighbors = 73
+            # plot_results = True  # If you are confident your system can handle it
+
+        # 3d testing parameters
+        elif data == "3d":
+            points = {"blue": [[2.0, 4, 3], [1, 3, 5], [2, 3, 1], [3, 2, 3], [2, 1, 6]],
+                      "red": [[5.0, 6, 5], [4, 5, 2], [4, 6, 1], [6, 6, 1], [5, 4, 6]]}
+            plot_results = True
+            three_dim = True
+            new_point = [3.0, 3, 4]
+
+    # Was unable to get a working or even promising implementation of my code to run with direct .csv format
+    # To ensure I have time, I was able to spend a few hours modifying the data from the csv to match my program
+    # Example/tester command line argument: ../data/fish_data.csv 2 0 1
+    elif len(args.command) >= 3:
+        data_path = args.command[0]
+        categories = int(args.command[1])
+        columns = np.array(args.command[2:], dtype=int)
+
+        if not data_path.endswith(".csv") or not os.path.isfile(data_path):
+            print(f"Error: The provided file, '{data_path}' is not a .csv file, does not exist, or could not be found")
+            usage_error()
+
+        print(os.path.abspath(data_path))
+        data = np.genfromtxt(data_path, delimiter=',', dtype=np.float32, skip_header=1)
+        plot_results = len(columns) < 4 and len(data) <= 100
+        three_dim = len(columns) == 3 and len(data) <= 100
+        relevant_data = data[:, columns]
+        data_categories = data[:, -1]
+        category_labels = ["blue", "red", "cyan", "magenta", "orange", "maroon", "aqua"]
+        points = {color: [] for color in category_labels[:categories]}
+
+        for index in range(len(relevant_data)):
+            category_index = int(data_categories[index])
+            if category_index < len(category_labels):
+                color = category_labels[category_index]
+                points[color].append(relevant_data[index])
+
+        # Convert lists to numpy arrays
+        for color in points:
+            points[color] = np.array(points[color])
+
+        new_point = [63, 5]
+
+    else:
+        print("Invalid Arguments Error: Arguments must be either an included test or the path to a .csv file "
+              "with the number of columns and categories.")
         usage_error()
-
-    # Simple testing, 2 blues and a 1 red should be the closest 3 with near identical distances
-    if data == "small":
-        # points = np.array([[6.0, 7, 0], [5, 6, 0], [2, 4, 0], [3, 5, 0], [7, 7, 0], [5.0, 3, 1], [5, 4, 1], [3, 3, 1],
-                           # [6, 4, 1], [4, 2, 1]])
-        points = {"blue": np.array([[6.0, 7], [5, 6], [2, 4], [3, 5], [7, 7]]),
-                  "red": np.array([[5.0, 3], [5, 4], [3, 3], [6, 4], [4, 2]])}
-        plot_results = True
-        new_point = [3.0, 4]
-
-    # Middle scale testing for more densely populated graphs
-    elif data == "middle":
-        np.random.seed(42)
-        points = {"blue": np.array([[2.9, 2.0], [4.5, 3.1], [7.8, 6.0], [9.0, 8.0], [3.0, 2.5], [6.0, 4.5], [10.0, 8.0],
-                                    [5.4, 4.0], [12.0, 10.0], [3.9, 3.0], [6.3, 5.0], [7.5, 5.5], [8.4, 7.0], [4.5, 3.5],
-                                    [11.7, 10.0], [9.6, 8.0], [10.8, 9.0], [12.6, 10.5], [3.6, 3.0], [8.1, 6.0], [5.7, 4.0],
-                                    [6.6, 5.5], [7.2, 6.0], [3.0, 2.5], [4.8, 4.0], [9.3, 7.5], [5.1, 4.0], [6.9, 5.5],
-                                    [7.8, 6.0], [3.3, 2.5], [5.4, 4.5], [8.4, 7.0], [4.2, 3.5], [10.2, 8.5],  [6.0, 5.0],
-                                    [7.5, 6.0], [3.9, 3.0], [8.7, 7.0], [5.7, 4.5], [9.9, 8.0], [11.4, 9.5], [6.6, 5.5],
-                                    [4.8, 4.0], [3.6, 3.0], [7.8, 6.0], [6.3, 5.0], [10.8, 9.0], [5.1, 4.0], [4.5, 3.5]]),
-                  "red": np.array([[2.0, 3.0], [3.1, 4.5], [6.0, 7.8], [8.0, 9.0], [2.5, 3.0], [4.5, 6.0], [8.0, 10.0],
-                                   [4.0, 5.4], [10.0, 12.0], [3.0, 3.9], [5.0, 6.3], [5.5, 7.5], [7.0, 8.4], [3.5, 4.5],
-                                   [10.0, 11.7], [8.0, 9.6], [9.0, 10.8], [10.5, 12.6], [3.0, 3.6], [6.0, 8.1], [4.0, 5.7],
-                                   [5.5, 6.6], [6.0, 7.2], [2.5, 3.0], [4.0, 4.8], [7.5, 9.3], [4.0, 5.1], [5.5, 6.9],
-                                   [6.0, 7.8], [2.5, 3.3], [4.5, 5.4], [7.0, 8.4], [3.5, 4.2], [8.5, 10.2], [5.0, 6.0],
-                                   [6.0, 7.5], [3.0, 3.9], [7.0, 8.7], [4.5, 5.7], [8.0, 9.9], [9.5, 11.4], [5.5, 6.6],
-                                   [4.0, 4.8], [3.0, 3.6], [6.0, 7.8], [5.0, 6.3], [9.0, 10.8], [4.0, 5.1], [3.5, 4.5]])}
-        new_point = [5.7, 6.8]
-        plot_results = True
-        neighbors = 17
-
-    # Large scale testing parameters for runtime difference, disables visualization by default
-    elif data == "large":
-        np.random.seed(42)
-        points = {"blue": np.random.uniform(0, 20, (1000000, 2)), "red": np.random.uniform(0, 20, (1000000, 2))}
-        new_point = np.random.uniform(0, 20, (1, 2)).flatten()
-        neighbors = 73
-        # plot_results = True  # If you are confident your system can handle it
-
-    # 3d testing parameters
-    elif data == "3d":
-        points = {"blue": [[2.0, 4, 3], [1, 3, 5], [2, 3, 1], [3, 2, 3], [2, 1, 6]],
-                  "red": [[5.0, 6, 5], [4, 5, 2], [4, 6, 1], [6, 6, 1], [5, 4, 6]]}
-        plot_results = True
-        three_dim = True
-        new_point = [3.0, 3, 4]
-
-# Was unable to get a working or even promising implementation of my code to run with direct .csv format
-# To ensure I have time, I was able to spend a few hours modifying the data from the csv to match my program
-# Example/tester command line argument: ../data/fish_data.csv 2 0 1
-elif len(args.command) >= 3:
-    data_path = args.command[0]
-    categories = int(args.command[1])
-    columns = np.array(args.command[2:], dtype=int)
-
-    if not data_path.endswith(".csv") or not os.path.isfile(data_path):
-        print(f"Error: The provided file, '{data_path}' is not a .csv file, does not exist, or could not be found")
-        usage_error()
-
-    print(os.path.abspath(data_path))
-    data = np.genfromtxt(data_path, delimiter=',', dtype=np.float32, skip_header=1)
-    plot_results = len(columns) < 4 and len(data) <= 100
-    three_dim = len(columns) == 3  and len(data) <= 100
-    relevant_data = data[:, columns]
-    data_categories = data[:, -1]
-    category_labels = ["blue", "red", "cyan", "magenta", "orange", "maroon", "aqua"]
-    points = {color: [] for color in category_labels[:categories]}
-
-    for i in range(len(relevant_data)):
-        category_index = int(data_categories[i])
-        if category_index < len(category_labels):
-            color = category_labels[category_index]
-            points[color].append(relevant_data[i])
-
-    # Convert lists to numpy arrays
-    for color in points:
-        points[color] = np.array(points[color])
-
-    new_point = [63, 5]
-
-
-else:
-    print("Invalid Arguments Error: Arguments must be either an included test or the path to a .csv file "
-          "with the number of columns and categories.")
-    usage_error()
 
 
 def np_euclid_dist(p, q):
@@ -155,7 +156,7 @@ def plot_points(ax):
 
 
 # Method for plotting normalized graphs with predictions
-def plot_prediction(ax):
+def plot_prediction(ax, clf, prediction):
     norm_new_point = clf._normalize_new_point(new_point)
     color = "#CF0000" if prediction == "red" else "#001D9A"
     if three_dim:
@@ -264,7 +265,7 @@ class KNearestNeighbors:
 
         # Prediction testing
         # print("Method: predict")
-        print(f"Neighbors: {self.k}")
+        # print(f"Neighbors: {self.k}")
         # print(f"Normalized new point: {unknown_pt}")
         # print(f"Distances: {distances}")
         # print(f"Selected kinds: {nearest_kinds}")
@@ -280,75 +281,79 @@ class KNearestNeighbors:
                 distance = np_euclid_dist(point, unknown_pt)
                 distances.append([distance, category])
 
-        categories = [category[1] for category in sorted(distances)[:self.k]]
-        result = Counter(categories).most_common(1)[0][0]
-        confidence = Counter(categories).most_common(1)[0][1] / neighbors
+        kinds = [category[1] for category in sorted(distances)[:self.k]]
+        result = Counter(kinds).most_common(1)[0][0]
+        confidence = Counter(kinds).most_common(1)[0][1] / neighbors
 
         # Prediction testing
         # print("Method: bad_predict")
-        #print(f"Neighbors: {neighbors}")
+        # print(f"Neighbors: {neighbors}")
         # print(f"Normalized new point: {unknown_pt}")
         # print(f"Distances (bad_predict): {distances}")
-        # print(f"Selected categories (bad_predict): {categories}")
+        # print(f"Selected kinds (bad_predict): {kinds}")
 
         return result, confidence
 
 
-clf = KNearestNeighbors(neighbors)
+def main():
+    clf = KNearestNeighbors(neighbors)
 
-# Normalization accuracy testing
-# print("Before running")
-# for category in points:
-    # print(category, points[category])
+    # Normalization accuracy testing
+    # print("Before running")
+    # for category in points:
+        # print(category, points[category])
 
-# Visualize if told
-# Modified to show 3 plots, actual, and both normalizations uses keyword for 3d version
-subplot_key = {'projection': '3d'} if three_dim else {}
-fig, axs = plt.subplots(1, 3, figsize=(18, 6), subplot_kw=subplot_key)
+    # Visualize if told
+    # Modified to show 3 plots, actual, and both normalizations uses keyword for 3d version
+    subplot_key = {'projection': '3d'} if three_dim else {}
+    fig, axs = plt.subplots(1, 3, figsize=(18, 6), subplot_kw=subplot_key)
 
-if plot_results:
-    # Actual values
-    init_graph(axs[0])
-    plot_points(axs[0])
+    if plot_results:
+        # Actual values
+        init_graph(axs[0])
+        plot_points(axs[0])
 
-# Timed for loops (bad)
-start_time = time.time()
-clf.bad_fit(points)
-prediction, confidence = clf.bad_predict(new_point)
-print(f"{prediction} predicted with loops in {time.time() - start_time:.6f} seconds with "
-      f"{confidence * 100:.3f}% confidence")
+    # Timed for loops (bad)
+    start_time = time.time()
+    clf.bad_fit(points)
+    prediction, confidence = clf.bad_predict(new_point)
+    print(f"{prediction} predicted with loops in {time.time() - start_time:.6f} seconds with "
+          f"{confidence * 100:.3f}% confidence")
 
-if plot_results:
-    init_graph(axs[1])
-    plot_prediction(axs[1])
+    if plot_results:
+        init_graph(axs[1])
+        plot_prediction(axs[1], clf, prediction)
 
-# Further norm/revert testing
-# print("After loop run, before reverting")
-# for category in clf.my_points:
-    # print(category, clf.my_points[category])
+    # Further norm/revert testing
+    # print("After loop run, before reverting")
+    # for category in clf.my_points:
+        # print(category, clf.my_points[category])
 
-# Revert points to original
-clf._denormalize_points()
+    # Revert points to original
+    clf._denormalize_points()
 
-# print("After reverting")
-# for category in clf.my_points:
-    # print(category, clf.my_points[category])
+    # print("After reverting")
+    # for category in clf.my_points:
+        # print(category, clf.my_points[category])
 
-# Timed numpy optimization
-start_time = time.time()
-clf.fit(points)
-prediction, confidence = clf.predict(new_point)
-print(f"{prediction} predicted with numpy in {time.time() - start_time:.6f} seconds with "
-      f"{confidence * 100:.3f}% confidence")
+    # Timed numpy optimization
+    start_time = time.time()
+    clf.fit(points)
+    prediction, confidence = clf.predict(new_point)
+    print(f"{prediction} predicted with numpy in {time.time() - start_time:.6f} seconds with "
+          f"{confidence * 100:.3f}% confidence")
 
-if plot_results:
-    init_graph(axs[2])
-    plot_prediction(axs[2])
+    if plot_results:
+        init_graph(axs[2])
+        plot_prediction(axs[2], clf, prediction)
 
-    plt.show()
+        plt.show()
 
 # Final norm/revert testing
 # print("After numpy run")
 # for category in clf.my_points:
     # print(category, clf.my_points[category])
 
+
+if __name__ == "__main__":
+    main()
