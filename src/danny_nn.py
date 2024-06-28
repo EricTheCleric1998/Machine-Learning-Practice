@@ -22,7 +22,7 @@ neighbors = 5
 print(f"Starting K-Nearest Neighbors with k={neighbors}")
 
 
-start = time.time_ns()
+start = time.time()
 numVals = np.size(xTest, axis=0)
 vals = range(numVals)
 correct = 0
@@ -32,8 +32,8 @@ for i in vals:
     if npClosest(neighbors, phisArray, x1) == y1:
         correct = correct + 1
 pyPercent = (correct / numVals) * 100
-end = time.time_ns()
-print(f"NP function time (ns): {end - start}")
+end = time.time()
+print(f"NP function time (seconds): {end - start}")
 
 
 #Normalizing values
@@ -51,10 +51,10 @@ print(f"NP function time (ns): {end - start}")
 # xTest[np.isnan(xTest)] = 0
 
 
-# print()
-# print(f"Accuracy using 2 columns(0,2) and {neighbors} neighbors: ")
-# print(f"-Numpy nearest neighbors: {correct} / {numVals} correct for {pyPercent:.2f}%")
-# print()0
+print()
+print(f"Accuracy using 2 columns(0,2) and {neighbors} neighbors: ")
+print(f"-Numpy nearest neighbors: {correct} / {numVals} correct for {pyPercent:.2f}%")
+print()
 
 
 #Setup NN
@@ -72,6 +72,8 @@ model.summary()
 model.fit(xTrain, yTrain, epochs=100)
 
 model.evaluate(xTest, yTest)
+
+
 
 #### tests with numpy normalization
 # test = np.array([[1,2,3],[-1,2,3],[1,-3,3]])
